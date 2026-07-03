@@ -42,7 +42,7 @@ Cooltra ofereix flotes de motos elèctriques a clients B2B de repartiment (JETA,
 | **Gestor de riders** | Backoffice | Dóna d'alta/baixa riders (individual i bulk) i genera els seus passwords aleatoris. |
 | **Rider** | Web app responsive | Usa el servei: login, recepció, operativa diària, incidències, substitució, mapa de bateries. |
 
-> Els rols de backoffice poden col·lapsar-se en un únic rol "Operacions Cooltra" a la v1 si es prefereix (veure Open Questions).
+> Els tres rols de backoffice són **separats des del principi** (roster amb rol per usuari): Admin Cooltra, Responsable de regió i Gestor de riders.
 
 ---
 
@@ -131,12 +131,13 @@ Cooltra ofereix flotes de motos elèctriques a clients B2B de repartiment (JETA,
 12. En l'assignació, la moto queda en estat **recepció** (no vinculada) fins que un gestor premi **Vincular**.
 13. En prémer **Vincular**, la moto passa a estat **vinculada** i el rider veu la pantalla "Vehicle vinculat".
 14. El sistema ha de permetre **desvincular** la moto del rider; en fer-ho, la web app del rider deixa de mostrar la moto **a l'instant** i la moto queda disponible per reassignar.
-15. (Condició d'error a definir) En desvincular, el sistema ha de gestionar el cas de moto en ruta — *bloquejant, pendent de definició (veure Open Questions).*
+15. La desvinculació és **sempre immediata**: no hi ha comprovació de "moto en ruta" perquè **no existeix telemàtica** que indiqui si la moto està en marxa.
 
 ### 6.3 Backoffice — Incidències *(REQ 4, REQ 5, REQ 6, REQ 9)*
 16. El sistema ha de permetre configurar, **a nivell de client**, un **llistat d'incidències** i marcar cada una com a **Lleu** o **Bloquejant**.
 17. Una incidència **Lleu** manté la moto operativa amb incidència oberta; una **Bloquejant** bloqueja la moto automàticament i activa el flux de substitució.
 18. Quan una moto queda bloquejada, el sistema ha d'assignar al rider una **moto de substitució** del seu client+regió i registrar check-out de la titular / check-in de la substitució.
+18b. El **gestor de flota** ha de disposar d'un botó **"Generar"** al backoffice que crea un **codi de 5 dígits aleatori** per a un vehicle de substitució; aquest codi és el que el rider introduirà a "Obrir seient" (RF 35).
 19. El taller/operacions ha de poder **tancar un ticket**; en tancar-lo, el rider rep una **notificació** que la moto està reparada i disponible per recollir *(REQ 6)*.
 20. El sistema ha de poder enviar una **notificació de cita de taller** per a reparacions lleus (data i hora) *(REQ 9)*.
 
@@ -161,7 +162,7 @@ Cooltra ofereix flotes de motos elèctriques a clients B2B de repartiment (JETA,
 32. **Reportar incidència**: llistat d'incidències del seu client (segons catàleg) + pujar una **fotografia**.
 33. **Vehicles de substitució**: el rider veu els vehicles de substitució del seu client i regió. **No hi pot fer res si té un vehicle vinculat.**
 34. Quan el rider **no té vehicle vinculat** (desvinculat), pot escollir un vehicle de substitució i **auto-assignar-se'l**.
-35. En auto-assignar-se una substitució, apareix el botó **"Obrir seient"**: el rider introdueix un **codi de 5 dígits** i prem **Enviar** *(el codi només aplica en aquest flux de substitució; l'obertura del vehicle titular és sense codi — REQ 2)*.
+35. En auto-assignar-se una substitució, apareix el botó **"Obrir seient"**: el rider introdueix un **codi de 5 dígits** i prem **Enviar** *(el codi només aplica en aquest flux de substitució; l'obertura del vehicle titular és sense codi — REQ 2)*. El codi el **genera aleatòriament el sistema** quan un **gestor de flota prem el botó "Generar"** al backoffice per a aquell vehicle de substitució.
 36. Quan el ticket es tanca al backend, la web app ha de mostrar al rider que la seva moto ja està **disponible per recollir**.
 37. **Mapa d'estacions de bateries**: mostra les estacions de canvi de bateries de Cooltra; per cada una, **quantes bateries hi ha >80% de càrrega** i un enllaç per **obrir Google Maps** a l'adreça de l'estació.
 38. **Reporte per QR sense usuari** *(REQ 18)*: qualsevol persona pot escanejar el QR d'un vehicle i reportar una incidència **sense compte ni login**.
@@ -175,6 +176,7 @@ Cooltra ofereix flotes de motos elèctriques a clients B2B de repartiment (JETA,
 - **SLA per Hub** (REQ 17) — fase futura.
 - **App nativa** iOS/Android — el rider usa web app responsive.
 - **Verificació d'email** dels riders — els emails són inventats i no es verifiquen.
+- **Telemàtica de l'estat de la moto** (si està en marxa/aturada) — no es construeix; per això la desvinculació és sempre immediata.
 - Facturació, pagaments i integració amb API externes de clients (JETA API) — no en aquesta versió.
 - Telemetria/GPS en temps real dels vehicles més enllà del necessari per al mapa de tickets.
 
@@ -220,11 +222,13 @@ Cooltra ofereix flotes de motos elèctriques a clients B2B de repartiment (JETA,
 
 ## 11. Preguntes obertes (Open Questions)
 
-1. **Rols de backoffice:** ¿un únic rol "Operacions Cooltra" a la v1, o tres rols separats (Admin / Responsable de regió / Gestor de riders) des del principi?
-2. **Condició d'error de desvinculació (REQ 3):** ¿què passa si es desvincula una moto **en ruta**? Definició bloquejant pendent.
-3. **Mantenim ents dinàmics (REQ 13):** sense integració POT ni exportació de rutes, ¿d'on surten els **km reals**? (entrada manual al tancar ticket? lectura del vehicle?) Cal font de dades.
-4. **Control de riders (REQ 15):** abast del panell (quines mètriques exactes: km, hores, rutes?) pendent de definir amb JETA/Cooltra.
-5. **Canal de comunicació directa (REQ 16):** ¿push a la web app, email, SMS, WhatsApp? Canal concret a validar.
-6. **"Obrir seient" amb codi de 5 dígits:** ¿d'on prové el codi (el genera el sistema, el HUB, l'armari físic del vehicle)? Cal definir l'origen i validació del codi.
-7. **Mapa de bateries:** ¿font de dades de bateries >80% (API interna de Cooltra)? A la v1 pot ser mock/lectura periòdica.
-8. **Notificacions:** ¿push web n'hi ha prou o cal email de fallback per a riders sense app oberta?
+1. **Mantenim ents dinàmics (REQ 13):** sense integració POT ni exportació de rutes, ¿d'on surten els **km reals**? (entrada manual al tancar ticket? lectura del vehicle?) Cal font de dades.
+2. **Control de riders (REQ 15):** abast del panell (quines mètriques exactes: km, hores, rutes?) pendent de definir amb JETA/Cooltra.
+3. **Canal de comunicació directa (REQ 16):** ¿push a la web app, email, SMS, WhatsApp? Canal concret a validar.
+4. **Mapa de bateries:** ¿font de dades de bateries >80% (API interna de Cooltra)? A la v1 pot ser mock/lectura periòdica.
+5. **Notificacions:** ¿push web n'hi ha prou o cal email de fallback per a riders sense app oberta?
+
+### Decisions tancades
+- **Rols de backoffice:** separats des del principi — Admin Cooltra, Responsable de regió, Gestor de riders (rol per usuari al roster).
+- **Desvinculació amb moto "en ruta":** no aplica; no hi ha telemàtica, la desvinculació és sempre immediata.
+- **Codi d'"obrir seient":** el genera aleatòriament el sistema quan un gestor de flota prem "Generar".
