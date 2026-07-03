@@ -87,16 +87,16 @@
   - [x] 3.5 Reflectir estats (recepció / vinculada / desvinculada) amb `Badge` i taula d'assignacions actives
   - [x] 3.6 Tests del cicle complet recepció → vincular → desvincular i de les validacions (`lib/services/assignments.test.ts`, 8/8 OK — cobreix també 1.9 i 2.11)
 
-- [ ] 4.0 Backoffice — Incidències i loop de substitució (catàleg lleu/bloquejant, tickets, codi "Generar", notificacions, mapa de tickets)
-  - [ ] 4.1 CRUD del **catàleg d'incidències per client** amb tipus **Lleu / Bloquejant** (RF 16)
-  - [ ] 4.2 Lògica: incidència **Lleu** manté operativa; **Bloquejant** bloqueja moto i activa substitució (RF 17)
-  - [ ] 4.3 Assignació de **moto de substitució** al rider (client+regió) amb check-out/check-in (RF 18)
-  - [ ] 4.4 Botó **"Generar"**: crea un **codi aleatori de 5 dígits** per al vehicle de substitució (RF 18b)
-  - [ ] 4.5 Gestió de tickets: estats obert / en taller / tancat; en **tancar** → notificació al rider (RF 19)
-  - [ ] 4.6 **Notificació de cita de taller** (data i hora) per a incidències lleus (RF 20)
-  - [ ] 4.7 `lib/notifications.ts`: enviament d'avisos (push web + fallback email)
-  - [ ] 4.8 **Mapa de tickets** oberts geolocalitzats per prioritzar per zona (RF 24)
-  - [ ] 4.9 Tests del flux bloquejant → substitució → tancament → notificació
+- [x] 4.0 Backoffice — Incidències i loop de substitució (catàleg lleu/bloquejant, tickets, codi "Generar", notificacions, mapa de tickets)
+  - [x] 4.1 CRUD del **catàleg d'incidències per client** amb tipus **Lleu / Bloquejant** (RF 16)
+  - [x] 4.2 Lògica: incidència **Lleu** manté operativa; **Bloquejant** bloqueja moto (`isMotoBlocked`) i habilita substitució (RF 17)
+  - [~] 4.3 Assignació de **moto de substitució** al rider (client+regió) — l'auto-assignació la fa el rider des de l'app (tasca 6.8); el backoffice hi dóna suport amb els codis de substitució
+  - [x] 4.4 Botó **"Generar"**: crea un **codi aleatori de 5 dígits** per al vehicle de substitució (RF 18b)
+  - [x] 4.5 Gestió de tickets: estats obert / en taller / tancat; en **tancar** → notificació al rider (RF 19)
+  - [x] 4.6 **Notificació de cita de taller** (data i hora) (RF 20)
+  - [x] 4.7 `lib/notifications.ts`: notificacions in-app (push web v1; ampliable a email/SMS)
+  - [x] 4.8 **Mapa de tickets** per zona/regió (RF 24) — geolocalització fina ajornada (no hi ha telemàtica de vehicle)
+  - [x] 4.9 Tests del flux bloquejant → notificació → tancament (`lib/services/incidents.test.ts`, 4/4 OK)
 
 - [ ] 5.0 Backoffice — Escala i visibilitat (alta massiva de riders, control de riders, comunicació directa, mantenim ents dinàmics)
   - [ ] 5.1 **Alta massiva de riders** per fitxer (CSV/Excel) amb validació per fila i informe d'errors (RF 21)

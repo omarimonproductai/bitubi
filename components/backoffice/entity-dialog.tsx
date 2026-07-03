@@ -26,7 +26,7 @@ import {
 export type FieldConfig = {
   name: string;
   label: string;
-  type?: "text" | "email" | "number" | "select";
+  type?: "text" | "email" | "number" | "select" | "datetime-local";
   placeholder?: string;
   required?: boolean;
   defaultValue?: string;

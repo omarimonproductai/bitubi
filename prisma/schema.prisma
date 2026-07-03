@@ -125,13 +125,34 @@ model Rider {
   status       RecordStatus @default(ACTIVE)
   createdAt    DateTime     @default(now())
 
-  client      Client                @relation(fields: [clientId], references: [id])
-  region      Region                @relation(fields: [regionId], references: [id])
-  assignments MotoRiderAssignment[]
-  tickets     Ticket[]
+  client        Client                @relation(fields: [clientId], references: [id])
+  region        Region                @relation(fields: [regionId], references: [id])
+  assignments   MotoRiderAssignment[]
+  tickets       Ticket[]
+  notifications Notification[]
 
   @@index([clientId])
   @@index([regionId])
+}
+
+enum NotificationType {
+  TICKET_CLOSED // moto reparada, disponible per recollir
+  WORKSHOP_APPOINTMENT // cita de taller
+  GENERIC
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  riderId   String
+  type      NotificationType @default(GENERIC)
+  message   String
+  ticketId  String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  rider Rider @relation(fields: [riderId], references: [id], onDelete: Cascade)
+
+  @@index([riderId])
 }
 
 // El responsable de regió assigna una moto a un client dins d'una regió,
