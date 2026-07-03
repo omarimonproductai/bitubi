@@ -12,12 +12,16 @@ export const PERMISSIONS: Record<Role, string[]> = {
     "incidents:write",
     "users:write",
     "comms:write",
+    "control:read",
+    "maintenance:write",
   ],
   REGION_MANAGER: [
     "assignments:write",
     "incidents:write",
     "motos:write",
     "comms:write",
+    "control:read",
+    "maintenance:write",
   ],
   RIDER_MANAGER: ["riders:write"],
 };

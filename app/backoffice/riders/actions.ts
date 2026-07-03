@@ -103,3 +103,81 @@ export async function toggleRiderStatus(id: string, next: boolean) {
   });
   revalidatePath("/backoffice/riders");
 }
+
+export type ImportRow = {
+  email: string;
+  ok: boolean;
+  error?: string;
+  password?: string;
+};
+export type ImportState = { rows?: ImportRow[]; error?: string };
+
+/**
+ * Alta massiva de riders des d'un text CSV: una línia per rider amb
+ * `email,client,regió` (noms de client/regió). Valida fila a fila.
+ */
+export async function importRiders(
+  _prev: ImportState,
+  formData: FormData
+): Promise<ImportState> {
+  await requirePermission("riders:write");
+  const csv = String(formData.get("csv") ?? "").trim();
+  if (!csv) return { error: "Enganxa el CSV (email,client,regió per línia)." };
+
+  const [clients, regions] = await Promise.all([
+    db.client.findMany(),
+    db.region.findMany(),
+  ]);
+  const clientByName = new Map(clients.map((c) => [c.name.toLowerCase(), c]));
+  const regionByName = new Map(regions.map((r) => [r.name.toLowerCase(), r]));
+
+  const rows: ImportRow[] = [];
+  for (const line of csv.split("\n")) {
+    const raw = line.trim();
+    if (!raw) continue;
+    const [emailRaw, clientRaw, regionRaw] = raw.split(",").map((s) => s?.trim());
+    const email = (emailRaw ?? "").toLowerCase();
+
+    const parsed = schema.safeParse({
+      email,
+      clientId: "x",
+      regionId: "x",
+    });
+    if (!parsed.success || !email.includes("@")) {
+      rows.push({ email: emailRaw ?? "(buit)", ok: false, error: "Email no vàlid" });
+      continue;
+    }
+    const client = clientByName.get((clientRaw ?? "").toLowerCase());
+    const region = regionByName.get((regionRaw ?? "").toLowerCase());
+    if (!client) {
+      rows.push({ email, ok: false, error: `Client "${clientRaw}" no trobat` });
+      continue;
+    }
+    if (!region) {
+      rows.push({ email, ok: false, error: `Regió "${regionRaw}" no trobada` });
+      continue;
+    }
+    if (!(await clientOperatesInRegion(client.id, region.id))) {
+      rows.push({ email, ok: false, error: "El client no opera en aquesta regió" });
+      continue;
+    }
+    if (await db.rider.findUnique({ where: { email } })) {
+      rows.push({ email, ok: false, error: "Email ja existent" });
+      continue;
+    }
+
+    const password = generateRandomPassword();
+    await db.rider.create({
+      data: {
+        email,
+        clientId: client.id,
+        regionId: region.id,
+        passwordHash: await hashPassword(password),
+      },
+    });
+    rows.push({ email, ok: true, password });
+  }
+
+  revalidatePath("/backoffice/riders");
+  return { rows };
+}

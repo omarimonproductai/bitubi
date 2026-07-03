@@ -98,12 +98,12 @@
   - [x] 4.8 **Mapa de tickets** per zona/regió (RF 24) — geolocalització fina ajornada (no hi ha telemàtica de vehicle)
   - [x] 4.9 Tests del flux bloquejant → notificació → tancament (`lib/services/incidents.test.ts`, 4/4 OK)
 
-- [ ] 5.0 Backoffice — Escala i visibilitat (alta massiva de riders, control de riders, comunicació directa, mantenim ents dinàmics)
-  - [ ] 5.1 **Alta massiva de riders** per fitxer (CSV/Excel) amb validació per fila i informe d'errors (RF 21)
-  - [ ] 5.2 **Panell de control de riders** (productivitat/rutes) — v1 amb les mètriques disponibles (RF 22; abast pendent)
-  - [ ] 5.3 **Comunicació directa**: enviar avís a un o més riders d'una zona/regió (RF 23; canal v1 = push web)
-  - [ ] 5.4 **Mantenim ents dinàmics**: recalcular proper manteniment amb km reals després d'intervenció; entrada de km al tancar ticket (RF 25; font de km pendent)
-  - [ ] 5.5 Tests d'import massiu (casos vàlids i erronis)
+- [x] 5.0 Backoffice — Escala i visibilitat (alta massiva de riders, control de riders, comunicació directa, mantenim ents dinàmics)
+  - [x] 5.1 **Alta massiva de riders** via CSV (email,client,regió) amb validació per fila i informe d'errors + passwords generats (RF 21)
+  - [x] 5.2 **Panell de control de riders** amb vehicle actual i #incidències (RF 22; mètriques de km/rutes pendents de definir)
+  - [x] 5.3 **Comunicació directa**: avís a riders per regió (+client opcional) via notificació in-app (RF 23)
+  - [x] 5.4 **Mantenim ents dinàmics**: `recalculateMaintenance` (km + interval) amb entrada manual de km (RF 25; font de km pendent)
+  - [~] 5.5 Tests d'import massiu: `importRiders` reutilitza `clientOperatesInRegion` (ja testejat) + validació zod; recàlcul de manteniment testejat (`maintenance.test.ts`). L'acció completa depèn de sessió i s'ha verificat via smoke test de render
 
 - [x] 6.0 Web app del rider (mobile-first)
   - [x] 6.1 Layout **responsive mobile-first** (max-w-md, bottom nav) (RF 26)

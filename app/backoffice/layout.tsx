@@ -29,6 +29,8 @@ export default async function BackofficeLayout({
     { href: "/backoffice/assignments", label: "Assignacions", icon: "assignments", perm: "assignments:write" },
     { href: "/backoffice/incidents", label: "Incidències", icon: "incidents", perm: "incidents:write" },
     { href: "/backoffice/tickets-map", label: "Mapa de tickets", icon: "map", perm: "incidents:write" },
+    { href: "/backoffice/riders-control", label: "Control de riders", icon: "assignments", perm: "control:read" },
+    { href: "/backoffice/maintenance", label: "Mantenim ents", icon: "motos", perm: "maintenance:write" },
     { href: "/backoffice/comms", label: "Comunicació", icon: "comms", perm: "comms:write" },
     { href: "/backoffice/users", label: "Usuaris", icon: "users", perm: "users:write" },
   ];

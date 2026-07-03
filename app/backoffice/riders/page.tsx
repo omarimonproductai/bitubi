@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { requirePermission } from "@/lib/guards";
 import { PageHeader } from "@/components/backoffice/page-header";
 import { RiderDialog } from "@/components/backoffice/rider-dialog";
+import { BulkImportDialog } from "@/components/backoffice/bulk-import-dialog";
 import { RegeneratePasswordButton } from "@/components/backoffice/regenerate-password-button";
 import { InlineAction } from "@/components/backoffice/inline-action";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +48,7 @@ export default async function RidersPage() {
         title="Riders"
         description="Cada rider pertany a un client i una regió. Email no verificable."
       >
+        <BulkImportDialog />
         <RiderDialog
           mode="create"
           clients={clientOpts}
