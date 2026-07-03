@@ -52,19 +52,19 @@
 
 ## Tasks
 
-- [ ] 0.0 Crear branca de feature
-  - [ ] 0.1 Crear i fer checkout d'una branca nova per a la feature (`git checkout -b feature/komobi-hd-fleet`)
+- [x] 0.0 Crear branca de feature
+  - [x] 0.1 Desenvolupament a la branca designada de la sessió (`claude/commands-directory-setup-wcfj0j`) en lloc d'una branca `feature/…` (restricció de la sessió)
 
 - [ ] 1.0 Fonaments del projecte (Next.js + Postgres + shadcn/ui light, auth i rols, esquema i seed)
-  - [ ] 1.1 Inicialitzar projecte Next.js (App Router, TypeScript) i configurar Tailwind
-  - [ ] 1.2 Instal·lar i configurar shadcn/ui amb tema **light** per defecte; afegir components base (button, card, dialog, sheet, table, badge, form, select, sonner, input-otp, tabs)
-  - [ ] 1.3 Configurar PostgreSQL i Prisma; `lib/db.ts` amb client singleton
-  - [ ] 1.4 Definir `prisma/schema.prisma` amb totes les entitats i relacions del PRD (secció 4) i les constraints d'integritat (moto↔regió única, rider = 1 client + 1 regió)
-  - [ ] 1.5 Crear i executar la primera migració
-  - [ ] 1.6 Implementar auth amb sessions i **4 rols** (Admin Cooltra, Responsable de regió, Gestor de riders, Rider); passwords hashejats (argon2/bcrypt)
-  - [ ] 1.7 Implementar `lib/rbac.ts` (autorització per rol i, per al responsable, per regió)
-  - [ ] 1.8 Escriure `prisma/seed.ts` amb dades d'exemple: regions (BCN, Granada, València, Madrid, Sevilla), adreces Cooltra, motos (1234MNM…), clients (JETA/Instapack/Glovo), riders d'exemple
-  - [ ] 1.9 Tests de les constraints d'integritat de flota
+  - [x] 1.1 Inicialitzar projecte Next.js (App Router, TypeScript) i configurar Tailwind
+  - [x] 1.2 Configurar shadcn/ui amb tema **light**; components base afegits manualment (button, card, input, label, badge, table, sonner) — la resta s'afegiran quan calguin (`ui.shadcn.com` bloquejat pel proxy, el CLI no hi pot accedir)
+  - [x] 1.3 Configurar PostgreSQL i Prisma; `lib/db.ts` amb client singleton
+  - [x] 1.4 Definir `prisma/schema.prisma` amb totes les entitats i relacions del PRD (secció 4) i les constraints d'integritat (moto↔regió única, rider = 1 client + 1 regió)
+  - [x] 1.5 Crear i executar la primera migració
+  - [x] 1.6 Implementar auth amb sessions i **4 rols** (Admin Cooltra, Responsable de regió, Gestor de riders, Rider); passwords hashejats (argon2)
+  - [x] 1.7 Implementar `lib/rbac.ts` (autorització per rol i, per al responsable, per regió)
+  - [x] 1.8 Escriure `prisma/seed.ts` amb dades d'exemple: regions (BCN, Granada, València, Madrid, Sevilla), adreces Cooltra, motos (1234MNM…), clients (JETA/Instapack/Glovo), riders d'exemple
+  - [ ] 1.9 Tests de les constraints d'integritat de flota → **es fa amb la tasca 3.6** (les regles "no moure moto amb rider" viuen a la capa de servei, creada a la 3.0)
 
 - [ ] 2.0 Backoffice — Gestió mestra (regions, adreces, motos, clients, riders, roster de rols)
   - [ ] 2.1 Layout del backoffice amb sidebar de navegació i guard per rol
