@@ -67,17 +67,17 @@
   - [ ] 1.9 Tests de les constraints d'integritat de flota → **es fa amb la tasca 3.6** (les regles "no moure moto amb rider" viuen a la capa de servei, creada a la 3.0)
 
 - [ ] 2.0 Backoffice — Gestió mestra (regions, adreces, motos, clients, riders, roster de rols)
-  - [ ] 2.1 Layout del backoffice amb sidebar de navegació i guard per rol
-  - [ ] 2.2 `components/data-table.tsx` reutilitzable (cerca, filtre, paginació)
-  - [ ] 2.3 CRUD de **regions** (alta/edició/baixa) amb estat actiu/baixa (RF 1)
-  - [ ] 2.4 CRUD d'**adreces** associades a una regió (RF 2)
-  - [ ] 2.5 CRUD de **motos** per matrícula amb assignació de regió; validar unicitat de matrícula (RF 3)
-  - [ ] 2.6 Aplicar regla: moto en **una sola regió** i **bloquejar canvi de regió si té rider vinculat** (RF 4, RF 5)
-  - [ ] 2.7 CRUD de **clients** (RF 6) i gestió de la relació **Regió-Client** (un client a 1..n regions) (RF 7)
-  - [ ] 2.8 CRUD de **riders** amb email + password; **generació de password aleatori** i **sense verificació d'email**; associació a 1 client + 1 regió (RF 8, RF 9)
-  - [ ] 2.9 **Roster de rols**: assignar rol (Admin / Responsable de regió / Gestor de riders) per usuari de backoffice
-  - [ ] 2.10 `Badge` d'estats i estats buits a totes les taules
-  - [ ] 2.11 Tests dels CRUD i de les regles d'integritat de motos
+  - [x] 2.1 Layout del backoffice amb sidebar de navegació (filtrada per rol) i guard `requireBackofficeUser`
+  - [~] 2.2 Taula reutilitzable: es fa servir `components/ui/table` amb estats buits i `Badge` a totes les pàgines; cerca/filtre/paginació **ajornats** fins que els volums de dades ho requereixin
+  - [x] 2.3 CRUD de **regions** (alta/edició/baixa) amb estat actiu/baixa (RF 1)
+  - [x] 2.4 CRUD d'**adreces** associades a una regió (RF 2)
+  - [x] 2.5 CRUD de **motos** per matrícula amb assignació de regió; validar unicitat de matrícula (RF 3)
+  - [x] 2.6 Aplicar regla: moto en **una sola regió** i **bloquejar canvi de regió si té rider vinculat** (RF 4, RF 5) — via `lib/services/fleet.ts`
+  - [x] 2.7 CRUD de **clients** (RF 6) i gestió de la relació **Regió-Client** (un client a 1..n regions) (RF 7)
+  - [x] 2.8 CRUD de **riders** amb email + password; **generació de password aleatori** i **sense verificació d'email**; associació a 1 client + 1 regió amb validació Regió-Client (RF 8, RF 9)
+  - [x] 2.9 **Roster de rols**: assignar rol (Admin / Responsable de regió / Gestor de riders) per usuari de backoffice
+  - [x] 2.10 `Badge` d'estats i estats buits a totes les taules
+  - [ ] 2.11 Tests dels CRUD i de les regles d'integritat de motos → pendent amb 3.6 (build + typecheck + smoke test de render/auth ja fets)
 
 - [ ] 3.0 Backoffice — Cicle rider–vehicle (moto→client amb substitució, moto→rider: recepció, vincular, desvincular)
   - [ ] 3.1 UI + API per **assignar moto a client** dins d'una regió on el client operi, amb toggle **és_substitució** (RF 10)
