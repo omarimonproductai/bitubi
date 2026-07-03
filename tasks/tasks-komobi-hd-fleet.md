@@ -64,7 +64,7 @@
   - [x] 1.6 Implementar auth amb sessions i **4 rols** (Admin Cooltra, Responsable de regió, Gestor de riders, Rider); passwords hashejats (argon2)
   - [x] 1.7 Implementar `lib/rbac.ts` (autorització per rol i, per al responsable, per regió)
   - [x] 1.8 Escriure `prisma/seed.ts` amb dades d'exemple: regions (BCN, Granada, València, Madrid, Sevilla), adreces Cooltra, motos (1234MNM…), clients (JETA/Instapack/Glovo), riders d'exemple
-  - [ ] 1.9 Tests de les constraints d'integritat de flota → **es fa amb la tasca 3.6** (les regles "no moure moto amb rider" viuen a la capa de servei, creada a la 3.0)
+  - [x] 1.9 Tests de les constraints d'integritat de flota → fet a `lib/services/assignments.test.ts` (regla "no moure moto amb rider" + relació Regió-Client)
 
 - [ ] 2.0 Backoffice — Gestió mestra (regions, adreces, motos, clients, riders, roster de rols)
   - [x] 2.1 Layout del backoffice amb sidebar de navegació (filtrada per rol) i guard `requireBackofficeUser`
@@ -77,15 +77,15 @@
   - [x] 2.8 CRUD de **riders** amb email + password; **generació de password aleatori** i **sense verificació d'email**; associació a 1 client + 1 regió amb validació Regió-Client (RF 8, RF 9)
   - [x] 2.9 **Roster de rols**: assignar rol (Admin / Responsable de regió / Gestor de riders) per usuari de backoffice
   - [x] 2.10 `Badge` d'estats i estats buits a totes les taules
-  - [ ] 2.11 Tests dels CRUD i de les regles d'integritat de motos → pendent amb 3.6 (build + typecheck + smoke test de render/auth ja fets)
+  - [x] 2.11 Tests de les regles d'integritat de motos → cobert per `lib/services/assignments.test.ts` (+ build/typecheck + smoke test de render/auth)
 
-- [ ] 3.0 Backoffice — Cicle rider–vehicle (moto→client amb substitució, moto→rider: recepció, vincular, desvincular)
-  - [ ] 3.1 UI + API per **assignar moto a client** dins d'una regió on el client operi, amb toggle **és_substitució** (RF 10)
-  - [ ] 3.2 UI + API per **assignar moto a rider** amb **dia i hora** (validant la relació Regió-Client del rider); crea estat **recepció** (RF 11, RF 12)
-  - [ ] 3.3 Botó **Vincular**: passa la moto a estat **vinculada** (RF 13)
-  - [ ] 3.4 Botó **Desvincular**: allibera la moto **a l'instant**, sempre immediat (sense comprovació de "en ruta") (RF 14, RF 15)
-  - [ ] 3.5 Reflectir estats (recepció / vinculada / desvinculada) amb `Badge` i historial d'assignacions
-  - [ ] 3.6 Tests del cicle complet recepció → vincular → desvincular i de les validacions
+- [x] 3.0 Backoffice — Cicle rider–vehicle (moto→client amb substitució, moto→rider: recepció, vincular, desvincular)
+  - [x] 3.1 UI + API per **assignar moto a client** dins d'una regió on el client operi, amb toggle **és_substitució** (RF 10)
+  - [x] 3.2 UI + API per **assignar moto a rider** amb **dia i hora** (validant la relació Regió-Client del rider); crea estat **recepció** (RF 11, RF 12)
+  - [x] 3.3 Botó **Vincular**: passa la moto a estat **vinculada** (RF 13)
+  - [x] 3.4 Botó **Desvincular**: allibera la moto **a l'instant**, sempre immediat (sense comprovació de "en ruta") (RF 14, RF 15)
+  - [x] 3.5 Reflectir estats (recepció / vinculada / desvinculada) amb `Badge` i taula d'assignacions actives
+  - [x] 3.6 Tests del cicle complet recepció → vincular → desvincular i de les validacions (`lib/services/assignments.test.ts`, 8/8 OK — cobreix també 1.9 i 2.11)
 
 - [ ] 4.0 Backoffice — Incidències i loop de substitució (catàleg lleu/bloquejant, tickets, codi "Generar", notificacions, mapa de tickets)
   - [ ] 4.1 CRUD del **catàleg d'incidències per client** amb tipus **Lleu / Bloquejant** (RF 16)
