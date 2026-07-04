@@ -1,0 +1,269 @@
+// KOMOBI HD Fleet — esquema de dades
+// Regles dures d'integritat de flota:
+//  - Una moto pertany a UNA sola regió (Moto.regionId).
+//  - Una moto amb rider vinculat no pot canviar de regió (validat a lib/services).
+//  - Un rider pertany a UN client i UNA regió, dins d'una relació Regió-Client (validat a lib/services).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RecordStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum Role {
+  ADMIN
+  REGION_MANAGER
+  RIDER_MANAGER
+}
+
+enum AssignmentStatus {
+  RECEPTION // recepció: assignada amb dia/hora, pendent de vincular
+  LINKED // vinculada: gestor ha premut "Vincular"
+  UNLINKED // desvinculada
+}
+
+enum IncidentType {
+  LEVE
+  BLOCKING
+}
+
+enum TicketStatus {
+  OPEN
+  IN_WORKSHOP
+  CLOSED
+}
+
+enum UserType {
+  BACKOFFICE
+  RIDER
+}
+
+model Region {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+
+  addresses      Address[]
+  motos          Moto[]
+  riders         Rider[]
+  regionClients  RegionClient[]
+  clientMotos    MotoClientAssignment[]
+  managers       BackofficeUser[]
+}
+
+model Address {
+  id        String       @id @default(cuid())
+  regionId  String
+  name      String
+  street    String
+  postcode  String
+  city      String
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+
+  region Region @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@index([regionId])
+}
+
+model Moto {
+  id        String       @id @default(cuid())
+  plate     String       @unique
+  regionId  String
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+
+  region            Region                 @relation(fields: [regionId], references: [id])
+  clientAssignments MotoClientAssignment[]
+  riderAssignments  MotoRiderAssignment[]
+  tickets           Ticket[]
+  maintenance       MaintenancePlan?
+
+  @@index([regionId])
+}
+
+model Client {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+
+  regionClients  RegionClient[]
+  riders         Rider[]
+  motoAssignments MotoClientAssignment[]
+  incidentCatalog IncidentCatalog[]
+}
+
+// Relació Regió-Client: un client opera en 1..n regions.
+model RegionClient {
+  id       String @id @default(cuid())
+  regionId String
+  clientId String
+
+  region Region @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([regionId, clientId])
+  @@index([clientId])
+}
+
+model Rider {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  clientId     String
+  regionId     String
+  status       RecordStatus @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+
+  client        Client                @relation(fields: [clientId], references: [id])
+  region        Region                @relation(fields: [regionId], references: [id])
+  assignments   MotoRiderAssignment[]
+  tickets       Ticket[]
+  notifications Notification[]
+
+  @@index([clientId])
+  @@index([regionId])
+}
+
+enum NotificationType {
+  TICKET_CLOSED // moto reparada, disponible per recollir
+  WORKSHOP_APPOINTMENT // cita de taller
+  GENERIC
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  riderId   String
+  type      NotificationType @default(GENERIC)
+  message   String
+  ticketId  String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  rider Rider @relation(fields: [riderId], references: [id], onDelete: Cascade)
+
+  @@index([riderId])
+}
+
+// El responsable de regió assigna una moto a un client dins d'una regió,
+// i marca si aquella moto és de substitució per a aquell client+regió.
+model MotoClientAssignment {
+  id             String   @id @default(cuid())
+  motoId         String
+  clientId       String
+  regionId       String
+  isSubstitution Boolean  @default(false)
+  seatCode       String? // codi de 5 dígits generat pel gestor per a vehicles de substitució
+  createdAt      DateTime @default(now())
+
+  moto   Moto   @relation(fields: [motoId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id])
+  region Region @relation(fields: [regionId], references: [id])
+
+  @@unique([motoId])
+  @@index([clientId, regionId])
+}
+
+// Assignació moto→rider: crea la "recepció del vehicle" i evoluciona a vinculada/desvinculada.
+model MotoRiderAssignment {
+  id          String           @id @default(cuid())
+  motoId      String
+  riderId     String
+  receptionAt DateTime // dia i hora de recepció escollits pel gestor
+  status      AssignmentStatus @default(RECEPTION)
+  createdAt   DateTime         @default(now())
+  linkedAt    DateTime?
+  unlinkedAt  DateTime?
+
+  moto  Moto  @relation(fields: [motoId], references: [id], onDelete: Cascade)
+  rider Rider @relation(fields: [riderId], references: [id], onDelete: Cascade)
+
+  @@index([motoId])
+  @@index([riderId])
+}
+
+// Catàleg d'incidències per client (lleu/bloquejant).
+model IncidentCatalog {
+  id        String       @id @default(cuid())
+  clientId  String
+  name      String
+  type      IncidentType
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+
+  client  Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+
+  @@index([clientId])
+}
+
+model Ticket {
+  id                   String       @id @default(cuid())
+  motoId               String
+  riderId              String?
+  catalogId            String?
+  photoUrl             String?
+  status               TicketStatus @default(OPEN)
+  workshopAppointmentAt DateTime?
+  createdAt            DateTime     @default(now())
+  closedAt             DateTime?
+
+  moto    Moto             @relation(fields: [motoId], references: [id], onDelete: Cascade)
+  rider   Rider?           @relation(fields: [riderId], references: [id])
+  catalog IncidentCatalog? @relation(fields: [catalogId], references: [id])
+
+  @@index([motoId])
+}
+
+model BatteryStation {
+  id              String   @id @default(cuid())
+  name            String
+  address         String
+  lat             Float
+  lng             Float
+  batteriesAbove80 Int     @default(0)
+  createdAt       DateTime @default(now())
+}
+
+model MaintenancePlan {
+  id                String   @id @default(cuid())
+  motoId            String   @unique
+  currentKm         Int      @default(0)
+  nextMaintenanceKm Int      @default(10000)
+  updatedAt         DateTime @updatedAt
+
+  moto Moto @relation(fields: [motoId], references: [id], onDelete: Cascade)
+}
+
+model BackofficeUser {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  role         Role
+  regionId     String? // per a REGION_MANAGER: la regió que gestiona
+  status       RecordStatus @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+
+  region Region? @relation(fields: [regionId], references: [id])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userType  UserType
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
